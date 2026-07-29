@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: nebula_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: nebula_root_2026
+      MYSQL_DATABASE: nebula_wp
+      MYSQL_USER: nebula
+      MYSQL_PASSWORD: nebula_pass_2026
+    volumes:
+      - db_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
+  wordpress:
+    image: wordpress:6.7-php8.3-apache
+    container_name: nebula_wp
+    restart: unless-stopped
+    depends_on:
+      - db
+    ports:
+      - "8888:80"
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: nebula
+      WORDPRESS_DB_PASSWORD: nebula_pass_2026
+      WORDPRESS_DB_NAME: nebula_wp
+    volumes:
+      - wp_data:/var/www/html
+
+  redis:
+    image: redis:7-alpine
+    container_name: nebula_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+
+volumes:
+  db_data:
+  wp_data:
